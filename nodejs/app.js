@@ -7,7 +7,7 @@ app.get("/", (req, res) => {
     res.send("Hello cigany");
 });
 
-app.get("/index", req, res => {
+app.get("/index", (req, res) => {
     res.sendFile("./views.index.html", {root, _dirname})
 });
 
