@@ -10,7 +10,8 @@ app.get('/', (req, res) => {
 
 app.get('/flowers', (req, res) => {
     const flowers = [];
-    res.send(flowers);
+   
+ res.send(flowers);
 })
 
 app.listen(3010, () => {
