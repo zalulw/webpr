@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Weekly Timetable</title>
+</head>
+<body>
+    <h1>Weekly Timetable</h1>
+    <div>
+        <table id="orarend"></table>
+    </div>
+    <div id="controls">
+        <label for="classNameInput" id="inputLabel">Class Name:</label>
+        <input type="text" id="classNameInput">
+        <button id="classAddButton" onclick="addClass()">Add Class</button>
+        <button id="classUpdateButton" onclick="updateClass()">Update class</button>
+        <button id="classDeleteButton" onclick="deleteClass()">Delete class</button>
+        <p id="message"></p>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
