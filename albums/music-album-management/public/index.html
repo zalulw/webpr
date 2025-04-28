@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Music Album Management</title>
+</head>
+<body>
+    <h1>Music Album Management</h1>
+    <div id="album-form">
+        <label for="bandInput">Band:</label>
+        <input type="text" id="bandInput" required>
+        
+        <label for="albumTitleInput">Album Title:</label>
+        <input type="text" id="albumTitleInput" required>
+        
+        <label for="additionalField1Input">Additional Field 1:</label>
+        <input type="text" id="additionalField1Input" required>
+        
+        <label for="additionalField2Input">Additional Field 2:</label>
+        <input type="text" id="additionalField2Input" required>
+        
+        <button id="addAlbumButton" onclick="addAlbum()">Add Album</button>
+        <button id="updateAlbumButton" onclick="updateAlbum()" style="display:none;">Update Album</button>
+    </div>
+    
+    <div id="album-list">
+        <h2>Album List</h2>
+        <ul id="albums"></ul>
+    </div>
+    
+    <div id="message"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
