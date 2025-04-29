@@ -95,11 +95,29 @@ const toggleActionButtons = (isUpdate) => {
 };
 
 const addClass = async () => {
+    if (!selectedCellId) {
+        alert("Please select a cell before adding a class.");
+        return;
+    }
+
+    const className = classNameInput.value.trim();
+    if (!className) {
+        alert("Class name cannot be empty.");
+        return;
+    }
+
     const [day, hour] = selectedCellId.replace("c", "").split("-");
-    const newClass = { name: classNameInput.value.trim(), day: +day, time: +hour };
-    await sendRequest("http://localhost:3000/classes", "POST", newClass);
-    schedule = await fetchClasses();
-    renderTable();
+    const newClass = { name: className, day: +day, time: +hour };
+
+    try {
+        await sendRequest("http://localhost:3000/classes", "POST", newClass);
+        schedule = await fetchClasses();
+        renderTable();
+        alert("Class added successfully!");
+    } catch (error) {
+        console.error("Error adding class:", error);
+        alert("Failed to add class. Please try again.");
+    }
 };
 
 const updateClass = async () => {

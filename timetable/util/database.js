@@ -24,22 +24,19 @@ export const executeQuery = (sql, params = []) =>
     });
 
 export const initializeDatabase = async () => {
-    await executeQuery("DROP TABLE IF EXISTS classes");
-    await executeQuery(`
-        CREATE TABLE IF NOT EXISTS classes (
-            id INTEGER PRIMARY KEY AUTOINCREMENT, 
-            name TEXT, 
-            day INTEGER, 
-            time INTEGER
-        );
-    `);
-
-    const initialClasses = []; // Add initial data if needed
-
-    for (const cls of initialClasses) {
-        await executeQuery(
-            "INSERT INTO classes (name, day, time) VALUES (?, ?, ?);", 
-            [cls.name, cls.day, cls.time]
-        );
+    try {
+        // Example: Create a table if it doesn't exist
+        await executeQuery(`
+            CREATE TABLE IF NOT EXISTS classes (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL,
+                day INTEGER NOT NULL,
+                time INTEGER NOT NULL
+            );
+        `);
+        console.log("Database initialized successfully.");
+    } catch (error) {
+        console.error("Error initializing database:", error);
+        throw error;
     }
 };
