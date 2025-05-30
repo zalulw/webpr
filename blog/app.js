@@ -1,14 +1,15 @@
 import express from "express";
 import * as db from "./util/database.js";
+import cors from "cors";
 
-const app = express();
+const app = express(); // Define app first
+app.use(cors()); // Then use cors middleware
+
 app.use(express.json());
 
 app.get('/users', (req, res) => {
     res.json(db.getUsers());
 });
-
-//#region posts 
 
 app.get('/posts', (req, res) => {
     res.json(db.getPosts());
@@ -46,7 +47,6 @@ app.delete('/posts/:id', (req, res) => {
     res.sendStatus(204);
 });
 
-// Start the server
 app.listen(8080, () => {
     console.log("Server is running on http://localhost:8080");
 });

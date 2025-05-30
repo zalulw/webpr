@@ -2,3 +2,4 @@
 fetch gyakorlas/node_modules/axios
 jscs/node_modules/.bin
 jscs/node_modules
+blog/node_modules
