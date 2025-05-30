@@ -1,6 +1,6 @@
 import Database from 'better-sqlite3';
 
-const db = new Database('blog.db');
+const db = new Database('./data/database.sqlite');
 
 db.exec(`
 CREATE TABLE IF NOT EXISTS users (
@@ -46,7 +46,7 @@ export function deletePost(id) {
   return db.prepare(`DELETE FROM posts WHERE id = ?`).run(id);
 }
 
-if (getUsers().length === 0) {
+/*if (getUsers().length === 0) {
   db.prepare('INSERT INTO users (name) VALUES (?)').run('Alice');
   db.prepare('INSERT INTO users (name) VALUES (?)').run('Bob');
   db.prepare('INSERT INTO users (name) VALUES (?)').run('Charlie');
@@ -54,4 +54,4 @@ if (getUsers().length === 0) {
 if (getPosts().length === 0) {
   createPost(1, 'Első poszt', 'Tech', 'Ez az első blogbejegyzés.',);
   createPost(2, 'Második poszt', 'Life', 'Ez a második blogbejegyzés.',);
-}
+}*/

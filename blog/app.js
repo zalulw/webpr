@@ -1,5 +1,5 @@
 import express from "express";
-import db from "./data/database.js";
+import * as db from "./util/database.js";
 
 const app = express();
 app.use(express.json());
@@ -45,9 +45,8 @@ app.delete('/posts/:id', (req, res) => {
     db.deletePost(req.params.id);
     res.sendStatus(204);
 });
-//#endregion
 
-
+// Start the server
 app.listen(8080, () => {
-    console.log("Server is running on :8080");
+    console.log("Server is running on http://localhost:8080");
 });
