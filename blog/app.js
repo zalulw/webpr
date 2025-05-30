@@ -2,8 +2,8 @@ import express from "express";
 import * as db from "./util/database.js";
 import cors from "cors";
 
-const app = express(); // Define app first
-app.use(cors()); // Then use cors middleware
+const app = express(); 
+app.use(cors()); 
 
 app.use(express.json());
 
