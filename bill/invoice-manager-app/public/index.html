@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer></script>
+    <title>Invoice Manager</title>
+</head>
+<body>
+    <header>
+        <h1>Invoice Manager</h1>
+    </header>
+    <main>
+        <section id="invoice-form">
+            <h2>Create Invoice</h2>
+            <form id="create-invoice">
+                <input type="text" id="issuer" placeholder="Issuer" required>
+                <input type="text" id="recipient" placeholder="Recipient" required>
+                <input type="text" id="invoice-number" placeholder="Invoice Number" required>
+                <input type="date" id="invoice-date" required>
+                <input type="date" id="fulfillment-date">
+                <input type="date" id="payment-deadline">
+                <input type="number" id="total-amount" placeholder="Total Amount" required>
+                <input type="number" id="vat-rate" placeholder="VAT Rate" required>
+                <button type="submit">Create Invoice</button>
+            </form>
+        </section>
+        <section id="invoice-list">
+            <h2>Invoices</h2>
+            <ul id="invoices"></ul>
+        </section>
+    </main>
+</body>
+</html>
