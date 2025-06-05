@@ -1,5 +1,0 @@
-The database file `database.sqlite` is a binary file created by SQLite and does not contain any human-readable content. Therefore, it cannot be generated as a text file. Instead, the SQLite database file will be created and managed by the application when it runs and executes the necessary SQL commands to create tables and insert data.
-
-To set up the database, you should ensure that the `util/database.js` file contains the necessary code to create the database and its tables when the application starts. The actual `database.sqlite` file will be created automatically by SQLite when the application is executed.
-
-If you need to initialize the database with some sample data, you can do that in your application logic after the database is created.

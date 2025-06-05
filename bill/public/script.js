@@ -2,7 +2,9 @@
 
 document.addEventListener('DOMContentLoaded', () => {
     loadInvoices();
-    
+    loadSellers();
+
+    document.getElementById('sellerForm').addEventListener('submit', createSeller);
     document.getElementById('invoiceForm').addEventListener('submit', createInvoice);
 });
 
@@ -40,3 +42,30 @@ async function createInvoice(event) {
         console.error('Failed to create invoice');
     }
 }
+
+async function loadSellers() {
+    const response = await fetch('/api/sellers');
+    const sellers = await response.json();
+    const sellerList = document.getElementById('sellerList');
+    sellerList.innerHTML = '';
+
+    sellers.forEach(seller => {
+        const listItem = document.createElement('li');
+        listItem.textContent = `${seller.name} (${seller.contact})`;
+        sellerList.appendChild(listItem);
+    });
+}
+
+async function createSeller(event) {
+    event.preventDefault();
+
+    const formData = new FormData(event.target);
+    const data = Object.fromEntries(formData.entries());
+
+    const response = await fetch('/api/sellers', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+});

@@ -13,6 +13,24 @@ db.exec(`CREATE TABLE IF NOT EXISTS invoices (
   vat_rate REAL NOT NULL
 )`);
 
+db.exec(`CREATE TABLE IF NOT EXISTS sellers (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL,
+  contact TEXT)`);
+
+export function getSellers() {
+  return db.prepare('SELECT * FROM sellers').all();
+}
+
+export function createSeller(name, contact) {
+  return db.prepare('INSERT INTO sellers (name, contact) VALUES (?, ?)')
+    .run(name, contact);
+}
+
+export function deleteSeller(id) {
+  return db.prepare('DELETE FROM sellers WHERE id = ?').run(id);
+}
+
 export function getInvoices() {
   return db.prepare('SELECT * FROM invoices').all();
 }
