@@ -36,7 +36,7 @@ invoice-manager-app
 ## Setup Instructions
 1. Clone the repository:
    ```
-   git clone <repository-url>
+   git clone https://github.com/zalulw/webpr/tree/main/bill
    cd invoice-manager-app
    ```
 
@@ -46,7 +46,8 @@ invoice-manager-app
    nodemon
    express
    cors
-   slite3
+   better-sqlite3
+   body-parser
 
 3. Start the application:
    ```
