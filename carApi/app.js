@@ -31,7 +31,11 @@ app.get("/cars/:id", (req, res) => {
 app.post("/cars", (req, res) => {
   const { brand, model } = req.body;
   if (!brand || !model) {
-    return res.status(400).json({ message: "bad request" });
+    return res.status(400).json({
+      status: "fail",
+      message: "Brand and model are required",
+      errorLocation: "POST /cars - missing brand or model in request body",
+    });
   }
   const id = cars.length ? cars[cars.length - 1].id + 1 : 1;
   const car = { id, brand, model };
@@ -47,13 +51,14 @@ app.put("/cars/:id", (req, res) => {
     res.status(404).json({ message: "car not found" });
   }
   const index = cars.indexOf(car);
+  const { brand, model } = req.body;
   car = {
     id: car.id,
     brand: brand,
     model: model,
   };
   cars[index] = car;
-  res.status(200).json();
+  res.status(200).json(car);
 });
 
 //delete
