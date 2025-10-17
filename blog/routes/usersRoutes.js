@@ -1,45 +1,137 @@
-import express from "express";
-import db from "../data/db.js";
+import { Router } from "express";
+import * as Users from "../data/user.js";
 import bcrypt from "bcrypt";
-import e from "express";
+import jwt from "jsonwebtoken";
 
-const router = express.Router();
+const router = Router();
 
 router.get("/", (req, res) => {
-  res.send("Users");
+  const users = Users.getUsers();
+  res.json(users);
 });
 
-router.get("/:id", (req, res) => {
-  const user = req.params.id;
-  res.status(200).json(user);
-});
+// router.get("/:id", (req, res) => {
+//   const user = Users.getUserById(+req.params.id);
+//   if (!user) {
+//     return res.status(404).json({ message: "User not found" });
+//   }
+//   res.json(user);
+// });
 
-router.post("/", (req, res) => {
-  const { name, email, password } = req.body;
-  if (!name || !email || !password) {
-    return res.status(400).json({ message: "invalid data" });
-  }
-  const saved = db.createUser(name, email, password);
-  const user = db.getUserById(saved.lastInsertedRowid);
-  res.status(201).json(user);
-});
-
-router.put("/users", (req, res) => {
-  const { name, email, password } = req.body;
-  if (!name || !email || !password) {
-    return res.status(400).json({ message: "missing data" });
-  }
-  const result = db.updateUser(name, email, password);
-  res.status(200).json(result);
-});
-
-router.delete("/users/:id", (req, res) => {
-  const user = req.params.id;
+router.get("/me", auth, (req, res) => {
+  const user = Users.getUserById(+req.userId);
   if (!user) {
-    return res.status(400).json({ message: "user not found" });
+    return res.status(404).json({ message: "User not found" });
   }
-  db.deleteUser(user);
-  res.status(200).json({ message: "delete successful" });
+  delete user.password;
+  res.json(user);
 });
+
+router.post("/register", (req, res) => {
+  const { name, email, password } = req.body;
+  if (!name || !email || !password) {
+    return res.status(400).json({ message: "Missing required data" });
+  }
+
+  let user = Users.getUserByEmail(email);
+  if (user) {
+    return res.status(400).json({ message: "email already in use" });
+  }
+
+  const salt = bcrypt.genSaltSync();
+  const hashedPassword = bcrypt.hashSync(password, salt);
+  const saved = Users.saveUser(name, email, hashedPassword);
+  user = Users.getUserById(saved.lastInsertRowid);
+  delete user.password;
+  res.json(user);
+});
+
+router.put("/:id", auth, (req, res) => {
+  const id = +req.params.id;
+  if (id != request.userId) {
+    return res.status(400).json({ message: "Invalid user id" });
+  }
+  let user = Users.getUserById(id);
+  if (!user) {
+    return res.status(404).json({ message: "User not found" });
+  }
+  const { name, email, password } = req.body;
+  if (!name || !email || !password) {
+    return res.status(400).json({ message: "Missing required data" });
+  }
+  const salt = bcrypt.genSaltSync();
+  const hashedPassword = bcrypt.hashSync(password, salt);
+  Users.updateUser(id, name, email, hashedPassword);
+  user = Users.getUserById(id);
+  res.json(user);
+});
+
+router.patch("/:id", auth, (req, res) => {
+  const id = +req.params.id;
+  if (id != request.userId) {
+    return res.status(400).json({ message: "Invalid user id" });
+  }
+  let user = Users.getUserById(id);
+  if (!user) {
+    return res.status(404).json({ message: "User not found" });
+  }
+  const { name, email, password } = req.body;
+  let hashedPassword;
+  if (password) {
+    const salt = bcrypt.genSaltSync();
+    hashedPassword = bcrypt.hashSync(password, salt);
+  }
+  Users.updateUser(
+    id,
+    name || user.name,
+    email || user.email,
+    hashedPassword || user.password
+  );
+  user = Users.getUserById(id);
+  res.json(user);
+});
+
+router.delete("/:id", auth, (req, res) => {
+  if(+req.params.id != req.userId) {
+    return res.status(400).json({message: "invalid user id"})
+  }
+  Users.deleteUser(+req.params.id);
+  delete req.userId;
+  delete req.headers.authorization;
+  res.json({ message: "User delete success" });
+});
+
+router.post("/login", (req, res) => {
+  const { email, password } = req.body;
+  if (!email || !password) {
+    return res.status(401).json({ message: "Invalid credentials" });
+  }
+  const user = Users.getUserByEmail(email);
+  if (!user) {
+    return res.status(401).json({ message: "Invalid credentials" });
+  }
+  if (!bcrypt.compareSync(password, user.password)) {
+    return res.status(401).json({ message: "Invalid credentials" });
+  }
+  const token = jwt.sign({ id: user.id, email: user.email }, "secret_key", {
+    expiresIn: "30m",
+  });
+  res.json({token});
+});
+
+export function auth(req, res, next) {
+  const accessToken = req.headers.authorization;
+  if (!accessToken) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+  const token = accessToken.split(" ")[1];
+  const data = jwt.verify(token, "secret_key");
+  const now = Math.floor(Date.now() / 1000);
+  if (data?.exp < now) {
+    return res.status(403).json({ message: "Token expired" });
+  }
+  req.userId = data.id;
+  next();
+}
 
 export default router;

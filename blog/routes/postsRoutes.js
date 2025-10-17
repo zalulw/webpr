@@ -1,41 +1,66 @@
-import { Router } from "express";
-import db from "../data/db.js";
+import express from "express";
+import * as Posts from "../data/post.js";
+import * as Users from "../data/user.js";
+import { auth } from "./usersRoutes.js";
 
-const router = Router();
+const router = express.Router();
 
 router.get("/", (req, res) => {
-  res.send("Posts");
+  const posts = Posts.getPosts();
+  res.json(posts);
 });
 
-router.get("/posts/:id", (req, res) => {
-  const post = req.params.id;
-  res.status(200).json(post);
-});
+router.post("/", auth, (req, res) => {
+    const {title, content} = req.body
+    if (!title || !content) {
+        return res.status(400).json({message: "Missing required data"})
+    }
+    const saved = Posts.savePost(req.userId, title, content)
+    const post = Posts.getPostById(saved.lastInsertRowid)
+    res.json(post)
+})
 
-router.post("/posts", (req, res) => {
-  const { title, content, userId } = req.body;
-  if (!title || !content || !userId) {
-    return res.status(400).json({ message: "invalid data" });
+router.get("/:id", (req, res) => {
+  const post = Posts.getPostById(+req.params.id);
+  if (!post) {
+    return res.status(404).json({ message: "Post not found" });
   }
-  const saved = db.createPost(title, content, userId);
-  const post = db.getPostById(saved.lastInsertedRowid);
-  res.status(201).json(post);
+  const user = Users.getUserById(post.userId);
+  const data = {
+    postId: post.id,
+    title: post.title,
+    content: post.content,
+    author: user.name,
+    contact: user.email,
+  };
+  res.json(data);
 });
 
-router.put("/:id", (req, res) => {
+router.patch("/:id", (req, res) => {
+  const id = +req.params.id;
+  let post = Posts.getPostById(id);
+  if (!post) {
+    return res.status(404).json({ message: "Post not found" });
+  }
   const { title, content } = req.body;
-  const { id } = req.params;
-  if (!title || !content) {
-    return res.status(400).json({ message: "missing data" });
-  }
-  const result = db.updatePost(id, title, content);
-  res.status(200).json(result);
+  Posts.updatePost(id, title || post.title, content || post.content);
+  post = Posts.getPostById(id);
+  const now = new Date(Date.now());
+  const data = {
+    ...post,
+    updated: `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`,
+  };
+  res.json(data);
 });
 
 router.delete("/:id", (req, res) => {
-  const { id } = req.params;
-  db.deletePost(id);
-  res.status(200).json({ message: "delete successful" });
+  const id = +req.params.id;
+  const post = Posts.getPostById(id);
+  if (!post) {
+    return res.status(404).json({ message: "Post not found" });
+  }
+  Posts.deletePost(id);
+  res.sendStatus(204);
 });
 
 export default router;
